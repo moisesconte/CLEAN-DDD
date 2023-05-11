@@ -20,8 +20,6 @@ describe('Edit Question', () => {
       new UniqueEntityId('question-1'),
     )
 
-    console.log(newQuestion)
-
     await inMemoryQuestionsRepository.create(newQuestion)
 
     await sut.execute({
@@ -44,8 +42,6 @@ describe('Edit Question', () => {
       },
       new UniqueEntityId('question-1'),
     )
-
-    console.log(newQuestion)
 
     await inMemoryQuestionsRepository.create(newQuestion)
 
