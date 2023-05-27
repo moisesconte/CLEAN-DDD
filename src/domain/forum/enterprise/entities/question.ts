@@ -10,8 +10,8 @@ export interface QuestionProps {
   title: string
   content: string
   slug: Slug
-  createAt: Date
-  updateAt?: Date
+  createdAt: Date
+  updatedAt?: Date
 }
 
 export class Question extends Entity<QuestionProps> {
@@ -35,29 +35,30 @@ export class Question extends Entity<QuestionProps> {
     return this.props.slug
   }
 
-  get createAt() {
-    return this.props.createAt
+  get createdAt() {
+    return this.props.createdAt
   }
 
-  get updateAt() {
-    return this.props.updateAt
+  get updatedAt() {
+    return this.props.updatedAt
   }
 
   get isNew(): boolean {
-    return dayjs().diff(this.createAt, 'days') <= 3
+    return dayjs().diff(this.createdAt, 'days') <= 3
   }
 
   get excerpt() {
-    return this.content.substring(0, 120).trim().concat('...')
+    return this.content.substring(0, 120).trimEnd().concat('...')
   }
 
   private touch() {
-    this.props.updateAt = new Date()
+    this.props.updatedAt = new Date()
   }
 
   set title(title: string) {
     this.props.title = title
     this.props.slug = Slug.createFromText(title)
+
     this.touch()
   }
 
@@ -72,14 +73,14 @@ export class Question extends Entity<QuestionProps> {
   }
 
   static create(
-    props: Optional<QuestionProps, 'createAt' | 'slug'>,
+    props: Optional<QuestionProps, 'createdAt' | 'slug'>,
     id?: UniqueEntityId,
   ) {
     const question = new Question(
       {
         ...props,
         slug: props.slug ?? Slug.createFromText(props.title),
-        createAt: props.createAt ?? new Date(),
+        createdAt: props.createdAt ?? new Date(),
       },
       id,
     )

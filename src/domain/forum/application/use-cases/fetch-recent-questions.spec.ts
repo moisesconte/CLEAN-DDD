@@ -1,37 +1,35 @@
 import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
 import { makeQuestion } from 'test/factories/make-question'
-import { FetchRecentQuestionsCase } from './fetch-recent-questions'
+import { FetchRecentQuestionsUseCase } from './fetch-recent-questions'
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
-let sut: FetchRecentQuestionsCase
+let sut: FetchRecentQuestionsUseCase
 
 describe('Fetch Recent Questions', () => {
   beforeEach(() => {
     inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
-    sut = new FetchRecentQuestionsCase(inMemoryQuestionsRepository)
+    sut = new FetchRecentQuestionsUseCase(inMemoryQuestionsRepository)
   })
 
   it('should be able to fetch recent questions', async () => {
     await inMemoryQuestionsRepository.create(
-      makeQuestion({ createAt: new Date(2022, 0, 20) }),
+      makeQuestion({ createdAt: new Date(2022, 0, 20) }),
     )
-
     await inMemoryQuestionsRepository.create(
-      makeQuestion({ createAt: new Date(2022, 0, 18) }),
+      makeQuestion({ createdAt: new Date(2022, 0, 18) }),
     )
-
     await inMemoryQuestionsRepository.create(
-      makeQuestion({ createAt: new Date(2022, 0, 23) }),
+      makeQuestion({ createdAt: new Date(2022, 0, 23) }),
     )
 
-    const { questions } = await sut.execute({
+    const result = await sut.execute({
       page: 1,
     })
 
-    expect(questions).toEqual([
-      expect.objectContaining({ createAt: new Date(2022, 0, 23) }),
-      expect.objectContaining({ createAt: new Date(2022, 0, 20) }),
-      expect.objectContaining({ createAt: new Date(2022, 0, 18) }),
+    expect(result.value?.questions).toEqual([
+      expect.objectContaining({ createdAt: new Date(2022, 0, 23) }),
+      expect.objectContaining({ createdAt: new Date(2022, 0, 20) }),
+      expect.objectContaining({ createdAt: new Date(2022, 0, 18) }),
     ])
   })
 
@@ -40,10 +38,10 @@ describe('Fetch Recent Questions', () => {
       await inMemoryQuestionsRepository.create(makeQuestion())
     }
 
-    const { questions } = await sut.execute({
+    const result = await sut.execute({
       page: 2,
     })
 
-    expect(questions).toHaveLength(2)
+    expect(result.value?.questions).toHaveLength(2)
   })
 })
